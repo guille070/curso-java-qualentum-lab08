@@ -83,7 +83,6 @@ public class ProductController {
             byte[] imageBytes = productService.getProductImage(id);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.IMAGE_JPEG);
-            headers.setContentType(MediaType.IMAGE_PNG);
             return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
