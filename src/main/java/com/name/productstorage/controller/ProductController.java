@@ -4,9 +4,12 @@ import com.name.productstorage.model.Product;
 import com.name.productstorage.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import org.springframework.http.HttpHeaders;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,6 +60,33 @@ public class ProductController {
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping("/productImage/{id}/add")
+    public ResponseEntity<HttpStatus> uploadImage(@PathVariable Integer id, @RequestParam("imageFile") MultipartFile imageFile ) {
+        if (!imageFile.getOriginalFilename().contains(".jpg") && !imageFile.getOriginalFilename().contains(".png")) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            productService.addProductImage(id, imageFile);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping(value = "/productImage/{id}")
+    public ResponseEntity<byte[]> downloadImage(@PathVariable Integer id) {
+        try {
+            byte[] imageBytes = productService.getProductImage(id);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_JPEG);
+            headers.setContentType(MediaType.IMAGE_PNG);
+            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
     }
 }
